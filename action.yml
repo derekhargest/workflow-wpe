@@ -1,0 +1,29 @@
+name: 'Deploy to WP Engine'
+description: 'Deploy a WordPress plugin or theme to WP Engine using git push'
+author: 'Linchpin'
+inputs:
+  project_type:
+    description: 'The type of WordPress Project you are deploying (plugin|theme)'
+    required: true
+    default: 'plugin'
+  repo_name:
+    description: 'The name of the repo/folder name the project will be deployed to'
+    required: true
+  wpe_ssh_key_private:
+    description: 'private key generated for usage in this action'
+    required: false
+  wpe_ssh_key_public:
+    description: 'public key generate for usage in this action'
+    required: false
+  wpe_install:
+    description: 'The WP Engine install subdomain we are deploying to'
+    required: false
+outputs:
+  success:
+    description: 'Did the deploy happen or not?'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+branding:
+  icon: 'arrow-right-circle'
+  color: 'blue'
