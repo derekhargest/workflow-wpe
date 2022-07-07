@@ -1,0 +1,8 @@
+{
+	"name": "creative-engineering/mindgrub-starter-theme",
+	"description": "Mindgrub's template WordPress theme",
+	"type": "wordpress-theme-custom",
+	"require": {
+		"composer/installers": "~1.0"
+	}
+}

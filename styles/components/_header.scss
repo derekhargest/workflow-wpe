@@ -1,0 +1,82 @@
+/* =================================================================================
+~ Header
+================================================================================= */
+
+.header {
+	background: $gray-lightest;
+	padding-top: 1.5rem;
+	padding-bottom: 1.5rem;
+	position: relative;
+
+	&__container {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		@include make-container();
+	}
+
+	&__toggle {
+		cursor: pointer;
+		font-size: 2.6rem;
+
+		&:hover,
+		&.active {
+			color: $brand-primary;
+		}
+	}
+
+	&__logo {
+		font-size: $font-size-base * 2;
+		font-weight: $font-weight-bold;
+	}
+}
+
+// Medium and smaller
+@include media-breakpoint-down(md) {
+	.header {
+		&__nav {
+			background: $gray-lightest;
+			display: none;
+			padding: 0 1.5rem 1.5rem;
+			position: absolute;
+			top: 100%;
+			left: 0;
+			width: 100%;
+
+			&.active {
+				display: block;
+				z-index: 999;
+			}
+		}
+
+		&__menu {
+			margin-bottom: 1.5rem;
+		}
+	}
+}
+
+// Large and larger
+@include media-breakpoint-up(lg) {
+	.header {
+		&__container {
+			@include make-container-max-width();
+		}
+
+		&__toggle {
+			display: none;
+		}
+
+		&__nav {
+			display: flex;
+		}
+
+		&__menu {
+			display: flex;
+			align-items: center;
+		}
+
+		&__search {
+			margin-left: 1.5rem;
+		}
+	}
+}

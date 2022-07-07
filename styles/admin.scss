@@ -1,0 +1,42 @@
+/**
+ * ACF Customizations
+ */
+
+ // For ACF groups with only one field with the same name we can add this class to hide the duplicate label
+.acf-field {
+	&.acf-hide-label {
+		> .acf-label {
+			margin-bottom: 0;
+
+			> label {
+				display: none;
+			}
+
+			> .description {
+				// Plugin uses important keyword for some reason so we fight fire with fire
+				margin-top: 0 !important;
+				margin-bottom: 10px !important;
+			}
+		}
+	}
+
+	&.acf-hide-thead {
+		.acf-table {
+			thead { display: none; }
+		}
+	}
+}
+
+/**
+ * Editor Customizations
+ */
+
+// Allow dashicons to be used for custom MCE buttons
+i.mce-i-icon {
+	font: 400 20px/1 dashicons;
+	padding: 0;
+	vertical-align: bottom;
+	speak: none;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}

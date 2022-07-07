@@ -1,0 +1,79 @@
+/* =================================================================================
+~ Variables
+================================================================================= */
+
+// Colors
+$black:					#000;
+$gray-darker:           lighten(#000, 13.5%); // #222
+$gray-dark:             lighten(#000, 20%);   // #333
+$gray:                  lighten(#000, 33.5%); // #555
+$gray-light:            lighten(#000, 60%);   // #999
+$gray-lighter:			lighten(#000, 80%);   // #ccc
+$gray-lightest:         lighten(#000, 93.5%); // #eee
+$white:					#fff;
+
+$blue:    				#007bff;
+$indigo:  				#6610f2;
+$purple:  				#6f42c1;
+$pink:    				#e83e8c;
+$red:     				#dc3545;
+$orange:  				#fd7e14;
+$yellow:  				#ffc107;
+$green:   				#28a745;
+$teal:    				#20c997;
+$cyan:    				#17a2b8;
+
+$facebook: 				#3b5998;
+$twitter: 				#1da1f2;
+$google: 				#4285f4;
+$linkedin: 				#0077b5;
+$youtube: 				#ff0000;
+
+$brand-primary:    		$facebook;
+$brand-secondary:     	$twitter;
+$brand-tertiary:        $youtube;
+
+$success:       		$green;
+$info:          		$cyan;
+$warning:       		$yellow;
+$danger:        		$red;
+
+// Typography
+$font-family-sans-serif:		-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+$font-family-serif:				'Georgia', 'Times New Roman', serif;
+$font-family-icon:				'FontAwesome';
+$font-family-monospace:			Monaco, Consolas, monospace;
+$font-family-base:				$font-family-sans-serif;
+
+$font-size-base:		1.6rem;
+$line-height-base:		1.5;
+
+$font-weight-light:		300;
+$font-weight-normal:	400;
+$font-weight-medium:	500;
+$font-weight-demi:		600;
+$font-weight-bold:		700;
+$font-weight-base:		$font-weight-normal;
+
+// Breakpoints
+$breakpoints: (
+	xs: 0,
+	sm: 576px,
+	md: 768px,
+	lg: 992px,
+	xl: 1200px
+);
+
+@include _assert-ascending( $breakpoints, "$grid-breakpoints");
+@include _assert-starts-at-zero( $breakpoints );
+
+
+// Grid containers
+$container-max-widths: (
+	sm: 540px,
+	md: 720px,
+	lg: 960px,
+	xl: 1140px
+);
+
+@include _assert-ascending( $container-max-widths, "$container-max-widths");

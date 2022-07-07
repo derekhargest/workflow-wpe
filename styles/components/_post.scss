@@ -1,0 +1,20 @@
+/* =================================================================================
+~ Post - used for styling posts within the loop ( partials/loop-post.php )
+================================================================================= */
+
+.post {
+	margin-bottom: 1.5rem;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+
+	&__title {
+		margin-bottom: 0.5rem;
+	}
+
+	&__byline {
+		font-size: .85em;
+		margin-bottom: 0.5rem;
+	}
+}

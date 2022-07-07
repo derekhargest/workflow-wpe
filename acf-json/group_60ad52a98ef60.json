@@ -1,0 +1,119 @@
+{
+    "key": "group_60ad52a98ef60",
+    "title": "Google Analytics \/ Tag Manager",
+    "fields": [
+        {
+            "key": "field_60ad54a7cc2a9",
+            "label": "Status",
+            "name": "google_status",
+            "type": "true_false",
+            "instructions": "(En\/dis)ables Google Analytics \/ Google Tag Manager scripts.",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "ui": 1,
+            "ui_on_text": "Enabled",
+            "ui_off_text": "Disabled"
+        },
+        {
+            "key": "field_60ad52f9cc2a8",
+            "label": "Implementation Type",
+            "name": "google_implementation_type",
+            "type": "button_group",
+            "instructions": "Select the method in which Google Analytics will be added to the site.",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "ga": "Google Analytics",
+                "gtm": "Google Tag Manager"
+            },
+            "allow_null": 1,
+            "default_value": "gtm",
+            "layout": "horizontal",
+            "return_format": "value"
+        },
+        {
+            "key": "field_60ad5507cc2aa",
+            "label": "Google Analytics ID",
+            "name": "google_analytics_id",
+            "type": "text",
+            "instructions": "The Tracking ID (Universal Analytics) or Measurement ID (Google Analytics 4).",
+            "required": 1,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_60ad52f9cc2a8",
+                        "operator": "==",
+                        "value": "ga"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_60ad55a3cc2ab",
+            "label": "Google Tag Manager ID",
+            "name": "google_tag_manager_id",
+            "type": "text",
+            "instructions": "The container ID from the desired Google Tag Manager account.",
+            "required": 1,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_60ad52f9cc2a8",
+                        "operator": "==",
+                        "value": "gtm"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "options_page",
+                "operator": "==",
+                "value": "acf-options-tracking-scripts"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Fields for any tracking scripts used by the theme (such as Google Analytics).",
+    "modified": 1622123031
+}

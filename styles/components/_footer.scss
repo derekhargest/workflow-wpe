@@ -1,0 +1,24 @@
+/* =================================================================================
+~ Footer
+================================================================================= */
+
+.footer {
+	background: $gray-lightest;
+	padding: 1.5rem 0;
+
+	&__container {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		@include make-container();
+	}
+}
+
+// Large and larger
+@include media-breakpoint-up(lg) {
+	.footer {
+		&__container {
+			@include make-container-max-width();
+		}
+	}
+}
