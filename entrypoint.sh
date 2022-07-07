@@ -1,94 +1,78 @@
 #!/bin/bash
-# If any commands fail (exit code other than 0) entire script exits
-set -e
 
-# See if our project has a gulpfile either in the root directory if it's a theme
-# or in the assets/ folder if it is a plugin
+# Default shell script used when deploying to WP Engine unless provided within the project directly.
+# This shell script will take the following actions:
+# 1. Sync from the _wpeprivate folder to the public directory
+# 2. Backup the database
+# 3. Cleanup any older releases
 
-composer_path="./composer.json"
-build_file_path="./gulpfile.js"
-bower_file_path="./bower.json"
-build_type=none
+# Shared variables for bash scripts.
+export DEPLOYMENT_DIR=$(pwd)
+export RELEASE_DIR="$(dirname "$DEPLOYMENT_DIR")"
+export RELEASES_DIR="$(dirname "$RELEASE_DIR")"
+export PRIVATE_DIR="$(dirname "$RELEASES_DIR")"
+export PUBLIC_DIR="$(dirname "$PRIVATE_DIR")"
 
-# Go to the working directory (current directory by default)
-cd ${working_directory:-./}
+cd "$PUBLIC_DIR"
 
-# If we have composer dependencies make sure they are installed
-if [ -f "$composer_path" ]
-then
-	echo "Composer File found. Starting composer install."
-	composer install
+# Start maintenance mode
+
+echo "::notice::ℹ︎ Starting Maintenance Mode"
+
+wget -O maintenance.php https://raw.githubusercontent.com/linchpin/actions/main/maintenance.php
+wp maintenance-mode activate
+
+wp db export --path="$PUBLIC_DIR" - | gzip > "$RELEASES_DIR/db_backup.sql.gz"
+
+cd "$RELEASE_DIR"
+
+# rsync latest release to public folder.
+rsync -arxc --delete ${RELEASE_DIR}/plugins/. ${PUBLIC_DIR}/wp-content/plugins
+rsync -arxc --delete ${RELEASE_DIR}/themes/. ${PUBLIC_DIR}/wp-content/themes
+
+# Only sync MU Plugins if we have them
+if [ -d "${RELEASE_DIR}/mu-plugins/" ] ; then
+
+  if [ ! -e "${RELEASE_DIR}/.distignore" ]; then
+    echo "::warning::ℹ︎ Loading default .distignore from github.com/linchpin/actions, you should add one to your project"
+    wget -O .distignore https://raw.githubusercontent.com/linchpin/actions/main/default.distignore
+  fi;
+
+  rsync -arxc --delete --exclude-from=".distignore" ${RELEASE_DIR}/mu-plugins/. ${PUBLIC_DIR}/wp-content/mu-plugins
 fi
 
-if [ -f "$build_file_path" ]
-then
-	echo "Gulpfile found. Starting build process"
-	build_type=gulp
-else
-	build_file_path="./gulpfile.babel.js"
-	if [ -f "$build_file_path" ]
-	then
-		echo "Gulpfile w/ Babel found. Starting build process"
-		build_type=gulp_yarn
-	fi
+# Final cleanup within the releases directory: Only keep the latest release zip
+
+cd "$RELEASES_DIR"
+
+# check for any zip files all but the newest
+
+if [ -f ./*.zip ]; then
+  echo "::notice::ℹ︎ Found old release zips. Removing all but the newest..."
+  ls -t *.zip | awk 'NR>2' | xargs rm -f
 fi
 
-if [ "$build_type" == "none" ]
-then
-	echo "Gulpfile not found. Searching for Gruntfile instead."
-	build_file_path="./Gruntfile.js"
-    if [ -f "$build_file_path" ]
-    then
-        echo "Gruntfile found."
-        build_type=grunt	
-    else
-        echo "No build file found. No build needed."
-    fi
+# Check for any .gz files and remove them
+if [ -f ./*.gz ]; then
+  echo "::notice::ℹ︎ Found old release tar.tz files. Removing all..."
+  ls -t *.gz | xargs rm -f
 fi
 
-# check to see our build type and if so build using either gulp or grunt
-if [ "$build_type" != "none" ]
-then
-	if [ "$build_type" == "gulp_yarn" ]
-	then
-		echo "Yarn Install"
-		yarn global add gulp-cli
-		yarn install
-	
-		# Only build if the build:production task exists in the build path
-		if grep -q build:production "$build_file_path";
-		then
-			echo "Building project using gulp"
-			gulp build:production
-		fi
-	else
-	    echo "Initiating NPM Install"
-	    npm install
+# Scan for release sub directories and remove them if we have any
+subdircount=$(find ./ -maxdepth 1 -type d | wc -l)
 
-	    # Only install and fire bower if we have a bower.json
-	    if [ -f "$bower_file_path" ]
-	    then
-		echo "Initiating Bower Install"
-
-		npm install -g bower
-		bower install --allow-root
-	    fi
-
-	    if [ $build_type = "gulp" ]
-	    then
-		    if grep -q build:production "$build_file_path";
-			then
-			echo "Building project using gulp"
-			npm install --global gulp-cli
-			gulp build:production
-		    fi
-	    else
-	    	    # Make sure we have a build command within our grunt file
-		    if grep -q build "$build_file_path";
-			then
-			echo "Building project using grunt"
-			grunt build
-		    fi
-	    fi
-	fi
+if [[ "$subdircount" -gt 1 ]]; then
+  echo "::notice::ℹ︎ Delete all old release folders"
+  find -maxdepth 1 ! -name "release" ! -name . -exec rm -rv {} \;
 fi
+
+cd "$PUBLIC_DIR"
+
+# End maintenance mode, reset 
+
+echo "::notice::ℹ︎ Maintenance Complete::"
+
+rm maintenance.php
+wp maintenance-mode deactivate
+
+echo "::notice::ℹ︎ Maintenance Mode Removed::"
