@@ -10,12 +10,3 @@ jobs:
     - uses: actions/checkout@v2
     - name: GitHub Action Deploy to WP Engine
       run: sh entrypoint.sh
-      with:
-      # Deploy vars 
-        WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
-        WPE_ENV: mindgrub
-        # Deploy Options
-        REMOTE_PATH: "wp-content/themes/workflow-wpe/"
-        PHP_LINT: TRUE
-        SCRIPT: "./entrypoint.sh"
-        CACHE_CLEAR: TRUE
