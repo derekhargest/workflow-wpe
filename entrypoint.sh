@@ -1,78 +1,135 @@
-#!/bin/bash
+#!/bin/bash -e
+#############################################################################
+# Name: deploy-wpe
+#
+# Description: Deploys to a git repository. Inspired by WordPress VIP Go's deploy script, see
+# https://github.com/Automattic/vip-go-build/blob/master/deploy.sh
+#
+# Globals:
+# - CI_BRANCH: The name of the Git branch currently being built.
+# - CI_COMMIT: Commit SHA that triggered the CI build
+# - REPO_SSH_URL: Repository to deploy to
+#############################################################################
 
-# Default shell script used when deploying to WP Engine unless provided within the project directly.
-# This shell script will take the following actions:
-# 1. Sync from the _wpeprivate folder to the public directory
-# 2. Backup the database
-# 3. Cleanup any older releases
+set -ex
 
-# Shared variables for bash scripts.
-export DEPLOYMENT_DIR=$(pwd)
-export RELEASE_DIR="$(dirname "$DEPLOYMENT_DIR")"
-export RELEASES_DIR="$(dirname "$RELEASE_DIR")"
-export PRIVATE_DIR="$(dirname "$RELEASES_DIR")"
-export PUBLIC_DIR="$(dirname "$PRIVATE_DIR")"
+DEPLOY_SUFFIX="-built"
 
-cd "$PUBLIC_DIR"
+BRANCH="$CI_BRANCH"
 
-# Start maintenance mode
+SRC_DIR="$PWD"
+BUILD_DIR="/tmp/build-$(date +%s)"
 
-echo "::notice::ℹ︎ Starting Maintenance Mode"
+COMMIT_SHA=${CI_COMMIT}
+DEPLOY_BRANCH="${BRANCH}${DEPLOY_SUFFIX}"
+cd $SRC_DIR
+COMMIT_AUTHOR_NAME="$( git log --format=%an -n 1 ${COMMIT_SHA} )"
+COMMIT_AUTHOR_EMAIL="$( git log --format=%ae -n 1 ${COMMIT_SHA} )"
+COMMIT_COMMITTER_NAME="$( git log --format=%cn -n 1 ${COMMIT_SHA} )"
+COMMIT_COMMITTER_EMAIL="$( git log --format=%ce -n 1 ${COMMIT_SHA} )"
 
-wget -O maintenance.php https://raw.githubusercontent.com/linchpin/actions/main/maintenance.php
-wp maintenance-mode activate
 
-wp db export --path="$PUBLIC_DIR" - | gzip > "$RELEASES_DIR/db_backup.sql.gz"
+# Run some checks
+# ---------------
 
-cd "$RELEASE_DIR"
-
-# rsync latest release to public folder.
-rsync -arxc --delete ${RELEASE_DIR}/plugins/. ${PUBLIC_DIR}/wp-content/plugins
-rsync -arxc --delete ${RELEASE_DIR}/themes/. ${PUBLIC_DIR}/wp-content/themes
-
-# Only sync MU Plugins if we have them
-if [ -d "${RELEASE_DIR}/mu-plugins/" ] ; then
-
-  if [ ! -e "${RELEASE_DIR}/.distignore" ]; then
-    echo "::warning::ℹ︎ Loading default .distignore from github.com/linchpin/actions, you should add one to your project"
-    wget -O .distignore https://raw.githubusercontent.com/linchpin/actions/main/default.distignore
-  fi;
-
-  rsync -arxc --delete --exclude-from=".distignore" ${RELEASE_DIR}/mu-plugins/. ${PUBLIC_DIR}/wp-content/mu-plugins
+if [[ -z "${BRANCH}" ]]; then
+	echo "ERROR: No branch specified!"
+	echo "This variable should be set by Travis CI and CircleCI, if you consistently experience errors please check with WordPress.com VIP support."
+	exit 1
 fi
 
-# Final cleanup within the releases directory: Only keep the latest release zip
-
-cd "$RELEASES_DIR"
-
-# check for any zip files all but the newest
-
-if [ -f ./*.zip ]; then
-  echo "::notice::ℹ︎ Found old release zips. Removing all but the newest..."
-  ls -t *.zip | awk 'NR>2' | xargs rm -f
+if [[ -d "$BUILD_DIR" ]]; then
+	echo "ERROR: ${BUILD_DIR} already exists."
+	echo "This should not happen, if you consistently experience errors please check with WordPress.com VIP support."
+	exit 1
 fi
 
-# Check for any .gz files and remove them
-if [ -f ./*.gz ]; then
-  echo "::notice::ℹ︎ Found old release tar.tz files. Removing all..."
-  ls -t *.gz | xargs rm -f
+if [[ "${BRANCH}" == *${DEPLOY_SUFFIX} ]]; then
+	echo "NOTICE: Attempting to build from branch '${BRANCH}' to deploy '${DEPLOY_BRANCH}', seems like recursion so aborting."
+	echo "This is a protective measure, no action is required."
+	exit 0
 fi
 
-# Scan for release sub directories and remove them if we have any
-subdircount=$(find ./ -maxdepth 1 -type d | wc -l)
+# Everything seems OK, getting the built repo sorted
+# --------------------------------------------------
 
-if [[ "$subdircount" -gt 1 ]]; then
-  echo "::notice::ℹ︎ Delete all old release folders"
-  find -maxdepth 1 ! -name "release" ! -name . -exec rm -rv {} \;
+echo "Deploying ${BRANCH} to ${DEPLOY_BRANCH}"
+
+# Making the directory we're going to sync the build into
+git init "${BUILD_DIR}"
+cd "${BUILD_DIR}"
+git remote add origin "${REPO_SSH_URL}"
+if [[ 0 = $(git ls-remote --heads "${REPO_SSH_URL}" "${DEPLOY_BRANCH}" | wc -l) ]]; then
+	echo -e "\nCreating a ${DEPLOY_BRANCH} branch..."
+	git checkout --quiet --orphan "${DEPLOY_BRANCH}"
+else
+	echo "Using existing ${DEPLOY_BRANCH} branch"
+	git fetch origin "${DEPLOY_BRANCH}" --depth=1
+	git checkout --quiet "${DEPLOY_BRANCH}"
 fi
 
-cd "$PUBLIC_DIR"
+# Expand all submodules
+git submodule update --init --recursive;
 
-# End maintenance mode, reset 
+# Copy the files over
+# -------------------
 
-echo "::notice::ℹ︎ Maintenance Complete::"
+if ! command -v 'rsync'; then
+	APT_GET_PREFIX=''
+	if command -v 'sudo'; then
+		APT_GET_PREFIX='sudo'
+	fi
 
-rm maintenance.php
-wp maintenance-mode deactivate
+	$APT_GET_PREFIX apt-get update
+	$APT_GET_PREFIX apt-get install -q -y rsync
+fi
 
-echo "::notice::ℹ︎ Maintenance Mode Removed::"
+echo "Syncing files... quietly"
+
+rsync --delete -a "${SRC_DIR}/" "${BUILD_DIR}" --exclude='.git/' --exclude='.cache/'
+
+# gitignore override
+# To allow commiting built files in the build branch (which are typically ignored)
+# -------------------
+
+BUILD_DEPLOYIGNORE_PATH="${BUILD_DIR}/.deployignore"
+if [ -f $BUILD_DEPLOYIGNORE_PATH ]; then
+	BUILD_GITIGNORE_PATH="${BUILD_DIR}/.gitignore"
+
+	if [ -f $BUILD_GITIGNORE_PATH ]; then
+		rm $BUILD_GITIGNORE_PATH
+	fi
+
+	echo "-- found .deployignore; emptying all gitignore files"
+	find $BUILD_DIR -type f -name '.gitignore' | while read GITIGNORE_FILE; do
+		echo "# Emptied by vip-go-build; '.deployignore' exists and used as global .gitignore. See https://wp.me/p9nvA-89A" > $GITIGNORE_FILE
+		echo "${GITIGNORE_FILE}"
+	done
+
+       	echo "-- using .deployignore as global .gitignore"
+	mv $BUILD_DEPLOYIGNORE_PATH $BUILD_GITIGNORE_PATH
+fi
+
+# Make up the commit, commit, and push
+# ------------------------------------
+
+# Set Git committer
+git config user.name "${COMMIT_COMMITTER_NAME}"
+git config user.email "${COMMIT_COMMITTER_EMAIL}"
+
+# Add changed files, delete deleted, etc, etc, you know the drill
+git add -A .
+
+if [ -z "$(git status --porcelain)" ]; then
+	echo "NOTICE: No changes to deploy"
+	exit 0
+fi
+
+# Commit it.
+MESSAGE=$( printf 'Build changes from %s\n\n%s' "${COMMIT_SHA}" "${CIRCLE_BUILD_URL}" )
+# Set the Author to the commit (expected to be a client dev) and the committer
+# will be set to the default Git user for this CI system
+git commit --author="${COMMIT_AUTHOR_NAME} <${COMMIT_AUTHOR_EMAIL}>" -m "${MESSAGE}"
+
+# Push it (push it real good).
+git push origin "${DEPLOY_BRANCH}"
