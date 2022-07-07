@@ -9,7 +9,6 @@ jobs:
     steps: 
     - uses: actions/checkout@v2
     - name: GitHub Action Deploy to WP Engine
-      uses: wpengine/github-action-wpe-site-deploy@v3.0
       run: sh entrypoint.sh
       with:
       # Deploy vars 
