@@ -1,6 +1,6 @@
 name: Deploy to WP Engine
 on:
-  push:
+  workflow_dispatch:
     inputs:
       install_name:
         description: 'The name of the install on WP Engine we are deploying to'
