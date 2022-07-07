@@ -1,10 +1,9 @@
 name: Deploy to WP Engine
 
 on:
-  workflow_call:
- push:
-    branches:
-     - main
+  push:
+      branches:
+      - main
 jobs:
   deploy:
     name: To WP Engine
