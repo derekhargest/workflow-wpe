@@ -1,7 +1,5 @@
 # Mindgrub Starter Theme
 
-This push has worked
-
 This is a WordPress theme intended to be used as a starting point for making a custom theme.
 
 ## Build Process
