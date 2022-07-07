@@ -1,135 +1,78 @@
 #!/bin/bash
-# If any commands fail (exit code other than 0) entire script exits
-set -e
 
-# Check for required environment variables and make sure they are setup
-: ${PROJECT_TYPE?"PROJECT_TYPE Missing"} # theme|plugin
-: ${WPE_INSTALL?"WPE_INSTALL Missing"}   # subdomain for wpengine install (Legacy single environment setup)
-: ${REPO_NAME?"REPO_NAME Missing"}       # repo name (Typically the folder name of the project)
+# Default shell script used when deploying to WP Engine unless provided within the project directly.
+# This shell script will take the following actions:
+# 1. Sync from the _wpeprivate folder to the public directory
+# 2. Backup the database
+# 3. Cleanup any older releases
 
-CI_BRANCH=${GITHUB_REF##*/}
+# Shared variables for bash scripts.
+export DEPLOYMENT_DIR=$(pwd)
+export RELEASE_DIR="$(dirname "$DEPLOYMENT_DIR")"
+export RELEASES_DIR="$(dirname "$RELEASE_DIR")"
+export PRIVATE_DIR="$(dirname "$RELEASES_DIR")"
+export PUBLIC_DIR="$(dirname "$PRIVATE_DIR")"
 
-SSH_PATH="$HOME/.ssh"
-WPENGINE_HOST="git.wpengine.com"
-KNOWN_HOSTS_PATH="$SSH_PATH/known_hosts"
-WPE_SSH_KEY_PRIVATE_PATH="$SSH_PATH/wpengine_key"
-WPE_SSH_KEY_PUBLIC_PATH="$SSH_PATH/wpengine_key.pub"
+cd "$PUBLIC_DIR"
 
-mkdir "$SSH_PATH"
+# Start maintenance mode
 
-ssh-keyscan -t rsa "$WPENGINE_HOST" >> "$KNOWN_HOSTS_PATH"
+echo "::notice::ℹ︎ Starting Maintenance Mode"
 
-echo "$WPE_SSH_KEY_PRIVATE" > "$WPE_SSH_KEY_PRIVATE_PATH"
-echo "$WPE_SSH_KEY_PUBLIC" > "$WPE_SSH_KEY_PUBLIC_PATH"
+wget -O maintenance.php https://raw.githubusercontent.com/linchpin/actions/main/maintenance.php
+wp maintenance-mode activate
 
-chmod 700 "$SSH_PATH"
-chmod 644 "$KNOWN_HOSTS_PATH"
-chmod 600 "$WPE_SSH_KEY_PRIVATE_PATH"
-chmod 644 "$WPE_SSH_KEY_PUBLIC_PATH"
+wp db export --path="$PUBLIC_DIR" - | gzip > "$RELEASES_DIR/db_backup.sql.gz"
 
-git config --global user.email "actions@github.com"
-git config --global user.name "Git Actions"
-git config --global core.sshCommand "ssh -i $WPE_SSH_KEY_PRIVATE_PATH -o UserKnownHostsFile=$KNOWN_HOSTS_PATH"
+cd "$RELEASE_DIR"
 
-# Set repo based on current branch, by default master=production, develop=staging
-# @todo support custom branches
+# rsync latest release to public folder.
+rsync -arxc --delete ${RELEASE_DIR}/plugins/. ${PUBLIC_DIR}/wp-content/plugins
+rsync -arxc --delete ${RELEASE_DIR}/themes/. ${PUBLIC_DIR}/wp-content/themes
 
-# This is considered legacy wpengine setup and should be deprecated. We'll keep this workflow in place for backwards compatibility.
-target_wpe_install=${WPE_INSTALL}
+# Only sync MU Plugins if we have them
+if [ -d "${RELEASE_DIR}/mu-plugins/" ] ; then
 
-# In WP Engine's multi-environment setup, we'll target each instance based on branch with variables to designate them individually.
-if [[ "$CI_BRANCH" == "master" && -n "$WPE_INSTALL" ]]
-then
-    target_wpe_install=${WPE_INSTALL}
+  if [ ! -e "${RELEASE_DIR}/.distignore" ]; then
+    echo "::warning::ℹ︎ Loading default .distignore from github.com/linchpin/actions, you should add one to your project"
+    wget -O .distignore https://raw.githubusercontent.com/linchpin/actions/main/default.distignore
+  fi;
+
+  rsync -arxc --delete --exclude-from=".distignore" ${RELEASE_DIR}/mu-plugins/. ${PUBLIC_DIR}/wp-content/mu-plugins
 fi
 
-echo -e  "Install: ${WPE_INSTALL}"
+# Final cleanup within the releases directory: Only keep the latest release zip
 
-# Begin from the clone directory
-# this directory is the default your git project is checked out into by Codeship.
-cd build
+cd "$RELEASES_DIR"
 
-# Get official list of files/folders that are not meant to be on production if $EXCLUDE_LIST is not set.
-if [[ -z "${EXCLUDE_LIST}" ]]; then
-    wget https://raw.githubusercontent.com/linchpin/wpengine-codeship-continuous-deployment/master/exclude-list.txt
-else
-    # @todo validate proper url?
-    wget ${EXCLUDE_LIST}
+# check for any zip files all but the newest
+
+if [ -f ./*.zip ]; then
+  echo "::notice::ℹ︎ Found old release zips. Removing all but the newest..."
+  ls -t *.zip | awk 'NR>2' | xargs rm -f
 fi
 
-# Loop over list of files/folders and remove them from deployment
-ITEMS=`cat exclude-list.txt`
-for ITEM in $ITEMS; do
-    if [[ "$ITEM" == *.* ]]
-    then
-        find . -depth -name "$ITEM" -type f -exec rm "{}" \;
-    else
-        find . -depth -name "$ITEM" -type d -exec rm -rf "{}" \;
-    fi
-done
-
-# Remove exclude-list file
-rm exclude-list.txt
-
-# go back home
-cd ..
-
-# Clone the WP Engine files to the deployment directory
-# if we are not force pushing our changes
-if [[ "$CI_MESSAGE" != *#force* ]]
-then
-    force=''
-    git clone git@git.wpengine.com:production/${target_wpe_install}.git ./deployment
-else
-    force='-f'
+# Check for any .gz files and remove them
+if [ -f ./*.gz ]; then
+  echo "::notice::ℹ︎ Found old release tar.tz files. Removing all..."
+  ls -t *.gz | xargs rm -f
 fi
 
-# If there was a problem cloning, exit
-if [ "$?" != "0" ] ; then
-    echo "Unable to clone production"
-    kill -SIGINT $$
+# Scan for release sub directories and remove them if we have any
+subdircount=$(find ./ -maxdepth 1 -type d | wc -l)
+
+if [[ "$subdircount" -gt 1 ]]; then
+  echo "::notice::ℹ︎ Delete all old release folders"
+  find -maxdepth 1 ! -name "release" ! -name . -exec rm -rv {} \;
 fi
 
-# check to see if we have a deployment folder, if so change directory to it. If not make the directory an initialize a git repo
-if [ ! -d ./deployment ]; then
-    mkdir ./deployment
-    cd ./deployment
-    git init
-else
-    cd ./deployment
-fi
+cd "$PUBLIC_DIR"
 
-# Move the gitignore file to the deployments folder
-wget --output-document=.gitignore https://raw.githubusercontent.com/linchpin/wpengine-codeship-continuous-deployment/master/gitignore-template.txt
+# End maintenance mode, reset 
 
-# Delete plugin/theme if it exists, and move cleaned version into deployment folder
-rm -rf ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
+echo "::notice::ℹ︎ Maintenance Complete::"
 
-# Check to see if the wp-content directory exists, if not create it
-if [ ! -d ./wp-content ];
-then
-    mkdir ./wp-content
-fi
+rm maintenance.php
+wp maintenance-mode deactivate
 
-# Check to see if the plugins directory exists, if not create it
-if [ ! -d ./wp-content/plugins ];
-then
-    mkdir ./wp-content/plugins
-fi
-
-# Check to see if the themes directory exists, if not create it
-if [ ! -d ./wp-content/themes ];
-then
-    mkdir ./wp-content/themes
-fi
-
-# Move files into the deployment folder
-rsync -a ../build/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
-
-# Stage, commit, and push to wpengine repo
-git remote add production git@git.wpengine.com:production/${target_wpe_install}.git
-
-git add --all
-git commit -am "Deployment to ${target_wpe_install} production by $CI_COMMITTER_NAME from $CI_NAME"
-
-git push ${force} production master
+echo "::notice::ℹ︎ Maintenance Mode Removed::"
