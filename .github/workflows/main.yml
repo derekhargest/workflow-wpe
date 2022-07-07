@@ -17,5 +17,5 @@ jobs:
         # Deploy Options
         REMOTE_PATH: "wp-content/themes/workflow-wpe/"
         PHP_LINT: TRUE
-        SCRIPT: ".deploy/entrypoint.sh"
+        SCRIPT: "entrypoint.sh"
         CACHE_CLEAR: TRUE
