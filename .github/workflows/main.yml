@@ -2,46 +2,9 @@ name: Deploy to WP Engine
 
 on:
   workflow_call:
-    inputs:
-      install_name:
-        description: 'The name of the install on WP Engine we are deploying to'
-        required: true
-        type: string
-      site_url:
-        description: 'The site url we are deploying to (full url)'
-        required: true
-        type: string
-      environment:
-        description: 'The environment we are deploying to (production, staging, dev)'
-        required: false
-        default: 'staging'
-        type: string
-      branch:
-        description: 'The branch we are deploying to'
-        required: false
-        default: 'staging'
-        type: string
-      deployment:
-        description: 'The deployment ID from previous jobs'
-        required: true
-        type: string
-      deployment_path:
-        description: 'Provide if the deployment path is non standard'
-        required: false
-        default: '_wpeprivate/releases'
-        type: string
-      workflow_run_id:
-        description: 'Workflow Run ID to get artifacts from'
-        required: true
-        type: string
-    secrets:
-      WPE_SSHG_KEY_PRIVATE:
-        description: 'WP Engine SSH Key needed for deployment'
-        required: true
-      gh_bot_token:
-        description: 'Bot Access to Private repo'
-        required: true
-
+ push:
+    branches:
+     - main
 jobs:
   deploy:
     name: To WP Engine
@@ -98,7 +61,7 @@ jobs:
           END
         env:
           SSH_USER: ${{ inputs.install_name }}
-          SSH_KEY: ${{ secrets.WPE_SSHG_KEY_PRIVATE }}
+          SSH_KEY: ${{ secrets.deployment_ssh_key }}
           SSH_HOST: "${{ inputs.install_name }}.ssh.wpengine.net"
 
       - name: Upload Assets
