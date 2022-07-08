@@ -1,15 +1,19 @@
-name: Deploy to WP Engine
+name: Deploy to WPEngine
 on:
   push:
     branches:
-     - main
+      - 'master'
+
 jobs:
   build:
-    runs-on: ubuntu-latest  
-    steps: 
-    - uses: actions/checkout@v2
-    - name: GitHub Action Deploy to WP Engine
-      uses: wpengine/github-action-wpe-site-deploy@v3.0
-      with:
-        WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
-        WPE_ENV: mindgrub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: build
+
+      - name: Build Theme
+        uses: linchpin/action-build-yarn-npm@master
+        env:
+          working_directory: "build/themes/workflow-wpe"
