@@ -14,7 +14,6 @@ jobs:
           path: build
 
       - name: Build Theme
-        uses: linchpin/action-build-yarn-npm@master
         env:
           working_directory: "build/themes/workflow-wpe"
           script: "entrypoint.sh"
