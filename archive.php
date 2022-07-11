@@ -11,7 +11,7 @@
 		<h1 class="page-header__title"><?php the_archive_title(); ?></h1>
 	</header>
 
-	<ol class="posts">
+	<ol class="posts eeee">
 		<?php
 		while ( have_posts() ) :
 			the_post();
