@@ -19,10 +19,10 @@ jobs:
         shell: bash
       - name: deploy to wpengine
         uses: wpengine/github-action-wpe-site-deploy@v3.0
-        with:
-      # Deploy vars 
-        WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
-        WPE_ENV: mindgrub
+        secrets:
+        # Deploy vars 
+          WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
+          WPE_ENV: mindgrub
         # Deploy Options
         REMOTE_PATH: "wp-content/themes/workflow-wpe/"
         PHP_LINT: TRUE
