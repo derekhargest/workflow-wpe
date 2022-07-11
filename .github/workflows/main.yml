@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Navigate To Root
+        run: cd ~/
       - name: Install
         run: ./entrypoint.sh
         shell: bash
