@@ -10,10 +10,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Permissions
+      - name: Build Dependencies
         run: |
-        chmod +x entrypoint.sh
-        chmod +x deploy.sh
+          chmod +x entrypoint.sh
+          chmod +x deploy.sh
       - name: Build Dependencies
         run: |
           cd ./
