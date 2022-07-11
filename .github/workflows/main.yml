@@ -11,5 +11,3 @@ jobs:
       - name: Checkout code
         run: ./entrypoint.sh
         shell: bash
-        env:
-          working_directory: "./"
