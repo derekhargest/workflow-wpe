@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        working-directory: ./
+      - name: Navigate To Root
         run: cd ../
+      - name: Install
         run: npm install
