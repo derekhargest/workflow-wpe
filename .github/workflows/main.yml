@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Navigate To Root
-        run: cd ../
-      - name: Look
-        run: ls
+        run: cd home/runner/work/workflow-wpe
       - name: Install
         run: npm install
