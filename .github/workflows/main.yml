@@ -13,5 +13,5 @@ jobs:
       with:
         WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
         WPE_ENV: mindgrub
-        SRC_PATH: "wp-content/themes/workflow-wpe/"
+        SRC_PATH: "wp-content/"
         CACHE_CLEAR: TRUE
