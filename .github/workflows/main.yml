@@ -28,8 +28,7 @@ jobs:
           npm install
           echo "Building"
           npm run build
-      - name: deploy to wpengine
-        run: ./deploy.sh
+          ./deploy.sh
         env:
           WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
           WPE_ENV: mindgrub
