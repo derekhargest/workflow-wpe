@@ -10,4 +10,5 @@ jobs:
     steps:
       - name: Checkout code
         working-directory: ./
+        run: cd ../
         run: npm install
