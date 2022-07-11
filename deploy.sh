@@ -2,7 +2,7 @@
 
 set -e
 
-: ${INPUT_WPE_SSHG_KEY_PRIVATE?Required secret not set.}
+: ${WPE_SSHG_KEY_PRIVATE?Required secret not set.}
 
 #Alias logic for ENV names 
 if [[ -n ${INPUT_WPE_ENV} ]]; then
@@ -43,7 +43,7 @@ fi
 
 # Copy Secret Keys to container
 WPE_SSHG_KEY_PRIVATE_PATH="$SSH_PATH/github_action"  
-echo "$INPUT_WPE_SSHG_KEY_PRIVATE" > "$WPE_SSHG_KEY_PRIVATE_PATH"
+echo "$WPE_SSHG_KEY_PRIVATE" > "$WPE_SSHG_KEY_PRIVATE_PATH"
 chmod 600 "$WPE_SSHG_KEY_PRIVATE_PATH"
 
 #establish known hosts
