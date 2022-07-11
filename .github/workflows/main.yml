@@ -12,6 +12,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Navigate To Root
         run: cd ~/
+      - name: Permissions
+        run: chmod +x entrypoint.sh
       - name: Install
         run: ./entrypoint.sh
         shell: bash
