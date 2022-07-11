@@ -10,10 +10,5 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          path: build
-
-      - name: Build Theme
-        env:
-          working_directory: "build/themes/workflow-wpe"
-          script: "entrypoint.sh"
+        run: "entrypoint.sh"
+        shell: bash
