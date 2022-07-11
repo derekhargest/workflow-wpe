@@ -5,20 +5,7 @@ on:
       - 'main'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Navigate To Root
-        run: cd ~/
-      - name: Permissions
-        run: chmod +x entrypoint.sh
-      - name: Install
-        run: ./entrypoint.sh
-        shell: bash
   deploy:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: deploy to wpengine
@@ -27,7 +14,6 @@ jobs:
         # Deploy vars 
           WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
           WPE_ENV: mindgrub
-          SRC_PATH: "wp-content/themes/workflow-wpe/"
           PHP_LINT: TRUE
           FLAGS: -azvr --inplace --delete --exclude=".*" --exclude-from=.deployignore
           CACHE_CLEAR: TRUE
