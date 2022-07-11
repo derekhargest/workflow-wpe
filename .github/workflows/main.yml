@@ -10,5 +10,7 @@ jobs:
     steps:
       - name: Navigate To Root
         run: cd ../
+      - name: Look
+        run: ls
       - name: Install
         run: npm install
