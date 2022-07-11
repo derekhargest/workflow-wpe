@@ -1,4 +1,4 @@
-# Mindgrub Starter Theme test another
+# Mindgrub Starter Theme
 
 This is a WordPress theme intended to be used as a starting point for making a custom theme.
 
