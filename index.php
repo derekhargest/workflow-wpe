@@ -7,7 +7,7 @@
 
 ?>
 <section class="content container container--padded container--max-width">
-	<ol class="posts">
+	<ol class="posts dddd">
 		<?php while ( have_posts() ) : ?>
 			<?php the_post(); ?>
 			<?php get_template_part( 'partials/loop-post' ); ?>
