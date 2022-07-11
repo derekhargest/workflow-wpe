@@ -30,7 +30,7 @@ jobs:
           npm run build
       - name: deploy to wpengine
         run: ./deploy.sh
-        env:
+        inputs:
           WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
           WPE_ENV: mindgrub
           REMOTE_PATH: "wp-content/themes/workflow-wpe/"
