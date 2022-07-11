@@ -5,8 +5,8 @@ set -e
 : ${WPE_SSHG_KEY_PRIVATE?Required secret not set.}
 
 #Alias logic for ENV names 
-if [[ -n ${INPUT_WPE_ENV} ]]; then
-    WPE_ENV_NAME="${INPUT_WPE_ENV}";
+if [[ -n ${WPE_ENV} ]]; then
+    WPE_ENV_NAME="${WPE_ENV}";
   elif [[ -n ${INPUT_PRD_ENV} ]]; then
     WPE_ENV_NAME="${INPUT_PRD_ENV}";
   elif [[ -n ${INPUT_STG_ENV} ]]; then
@@ -20,7 +20,7 @@ echo "Deploying ${GITHUB_REF} to ${WPE_ENV_NAME} ..."
 
 # Deploy Vars
 WPE_SSH_HOST="$WPE_ENV_NAME.ssh.wpengine.net"
-DIR_PATH="$INPUT_REMOTE_PATH"
+DIR_PATH="$REMOTE_PATH"
 SRC_PATH="$INPUT_SRC_PATH"
  
 # Set up our user and path
@@ -79,9 +79,9 @@ if [[ -n ${INPUT_SCRIPT} ]]; then
 fi 
 
 # post deploy cache clear
-if [ "${INPUT_CACHE_CLEAR^^}" == "TRUE" ]; then
+if [ "${CACHE_CLEAR^^}" == "TRUE" ]; then
     CACHE_CLEAR="&& wp page-cache flush"
-  elif [ "${INPUT_CACHE_CLEAR^^}" == "FALSE" ]; then
+  elif [ "${CACHE_CLEAR^^}" == "FALSE" ]; then
       CACHE_CLEAR=""
   else echo "CACHE_CLEAR must be TRUE or FALSE only... Cache not cleared..."  && exit 1;
 fi
