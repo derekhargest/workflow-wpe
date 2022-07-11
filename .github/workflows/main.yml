@@ -10,24 +10,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Build Dependencies
+      - name: Permissions
         run: |
           chmod +x entrypoint.sh
           chmod +x deploy.sh
       - name: Build Dependencies
         run: |
-          cd ./
-          echo "NVM"
-          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loaads nvm bash_completion
-          nvm install 14
-          nvm use 14
-          echo "Initiating NPM Install"
-          npm install
-          echo "Building"
-          npm run build
           ./deploy.sh
         env:
           WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
