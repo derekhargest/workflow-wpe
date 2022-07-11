@@ -14,6 +14,4 @@ jobs:
         # Deploy vars 
           WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
           WPE_ENV: mindgrub
-          PHP_LINT: TRUE
-          FLAGS: -azvr --inplace --delete --exclude=".*" --exclude-from=.deployignore
           CACHE_CLEAR: TRUE
