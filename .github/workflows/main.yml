@@ -17,9 +17,12 @@ jobs:
       - name: Install
         run: ./entrypoint.sh
         shell: bash
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
       - name: deploy to wpengine
         uses: wpengine/github-action-wpe-site-deploy@v3.0
-        secrets:
+        with:
         # Deploy vars 
           WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
           WPE_ENV: mindgrub
