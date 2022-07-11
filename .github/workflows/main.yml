@@ -9,5 +9,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
+        working-directory: ./
         run: npm install
-          working-directory: ./
