@@ -9,6 +9,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        working-directory: "./"
-        run: ./entrypoint.sh
-        shell: bash
+        run: npm install
