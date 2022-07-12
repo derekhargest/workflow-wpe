@@ -13,22 +13,25 @@ jobs:
       - name: Build Dependencies
         run: |
           cd ./
-          echo "NVM"
+          echo "Installing NVM"
           curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
           export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+          echo "Load Bash Completion"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+          echo "Install and Use NVM 14"
           nvm install 14
           nvm use 14
           echo "Initiating NPM Install"
           npm install
-          echo "Building"
+          echo "Building Theme"
           npm run build
+          echo "Removing Node Modules"
           rm -rf node_modules/
-      - name: deploy to wpengine
+      - name: Deploy to WPEngine
         uses: wpengine/github-action-wpe-site-deploy@v3.0
         with:
-        # Deploy vars 
+          #Deploy Variables
           WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
           WPE_ENV: mindgrub
           REMOTE_PATH: "wp-content/themes/workflow-wpe/"
