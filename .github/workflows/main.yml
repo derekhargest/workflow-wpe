@@ -31,5 +31,5 @@ jobs:
         env:
           WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
           PRD_ENV: mindgrub
-          REMOTE_PATH: "wp-content/themes/workflow-wpe/"
+          REMOTE_PATH: "wp-content/"
           CACHE_CLEAR: TRUE
