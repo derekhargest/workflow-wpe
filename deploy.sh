@@ -28,6 +28,11 @@ WPE_SSH_USER="$WPE_ENV_NAME"@"$WPE_SSH_HOST"
 WPE_FULL_HOST=wpe_gha+"$WPE_SSH_USER"
 WPE_DESTINATION=wpe_gha+"$WPE_SSH_USER":sites/"$WPE_ENV_NAME"/"$DIR_PATH"
 
+echo "WPE_SSH_USER : " WPE_SSH_USER
+echo "WPE_DESTINATION : " WPE_DESTINATION
+echo "WPE_FULL_HOST : " WPE_FULL_HOST
+
+
 
 # Setup our SSH Connection & use keys
 if [ ! -d ${HOME}/.ssh ]; then 
@@ -40,6 +45,8 @@ if [ ! -d ${HOME}/.ssh ]; then
   SSH_PATH="${HOME}/.ssh" 
   echo "using established SSH KEY path...";
 fi
+
+echo "WPE_FULL_HOST : " SSH_PATH
 
 # Copy Secret Keys to container
 WPE_SSHG_KEY_PRIVATE_PATH="$SSH_PATH/github_action"  
