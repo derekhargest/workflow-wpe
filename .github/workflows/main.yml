@@ -24,6 +24,7 @@ jobs:
           npm install
           echo "Building"
           npm run build
+          rm -rf node_modules/
       - name: deploy to wpengine
         uses: wpengine/github-action-wpe-site-deploy@v3.0
         with:
@@ -32,20 +33,3 @@ jobs:
           WPE_ENV: mindgrub
           REMOTE_PATH: "wp-content/themes/workflow-wpe/"
           CACHE_CLEAR: TRUE
-  # build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v3
-  #     - name: Navigate To Root
-  #       run: cd ~/
-  #     - name: Permissions
-  #       run: chmod +x entrypoint.sh
-  #     - name: dependencies
-        # with:
-        # # Deploy vars 
-        #   WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
-        #   WPE_ENV: mindgrub
-        #   REMOTE_PATH: "wp-content/themes/workflow-wpe/"
-        #   CACHE_CLEAR: TRUE
-        # run: ssh $WPE_SITE_NAME@$WPE_SSH_HOST -i $SSH_PRIVATE_ACCOUNT_KEY_PATH -o UserKnownHostsFile=$KNOWN_HOSTS_PATH << EOF
