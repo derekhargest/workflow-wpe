@@ -1,4 +1,4 @@
-# Mindgrub Starter Theme test
+# Mindgrub Starter Theme MAIN BRANCH
 
 This is a WordPress theme intended to be used as a starting point for making a custom theme.
 
