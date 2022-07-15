@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - 'main'
+      - 'stage'
+      - 'dev'
 
 jobs:
   deploy:
@@ -32,9 +34,12 @@ jobs:
         uses: wpengine/github-action-wpe-site-deploy@v3.0
         with:
           #Deploy Variables
-          WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
+          WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }}
+          PRD_BRANCH: main
           PRD_ENV: mindgrub
+          STG_BRANCH: stage
           STG_ENV: stgmindgrub
+          DEV_BRANCH: dev
           DEV_ENV: devmindgrub
           REMOTE_PATH: "wp-content/themes/workflow-wpe/"
           CACHE_CLEAR: TRUE
