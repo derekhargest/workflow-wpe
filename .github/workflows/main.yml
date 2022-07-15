@@ -33,6 +33,8 @@ jobs:
         with:
           #Deploy Variables
           WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
-          WPE_ENV: mindgrub
+          PRD_ENV: mindgrub
+          STG_ENV: stgmindgrub
+          DEV_ENV: devmindgrub
           REMOTE_PATH: "wp-content/themes/workflow-wpe/"
           CACHE_CLEAR: TRUE
