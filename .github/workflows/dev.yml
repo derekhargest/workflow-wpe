@@ -1,8 +1,8 @@
-name: Deploy to WPEngine - MAIN
+name: Deploy to WPEngine - DEV
 on:
   push:
     branches:
-      - 'main'
+      - 'dev'
 
 jobs:
   deploy:
@@ -33,6 +33,6 @@ jobs:
         with:
           #Deploy Variables
           WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
-          WPE_ENV: mindgrub
+          WPE_ENV: devmindgrub
           REMOTE_PATH: "wp-content/themes/workflow-wpe/"
           CACHE_CLEAR: TRUE
