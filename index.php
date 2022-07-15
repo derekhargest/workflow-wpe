@@ -7,6 +7,7 @@
 
 ?>
 <section class="content container container--padded container--max-width">
+	<h2>This is the DEV environment</h2>
 	<ol class="posts">
 		<?php while ( have_posts() ) : ?>
 			<?php the_post(); ?>
