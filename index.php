@@ -7,6 +7,7 @@
 
 ?>
 <section class="content container container--padded container--max-width">
+	<h2>This is the Staging Branch</h2>
 	<ol class="posts">
 		<?php while ( have_posts() ) : ?>
 			<?php the_post(); ?>
