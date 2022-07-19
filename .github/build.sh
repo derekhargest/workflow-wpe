@@ -19,5 +19,19 @@ npm install
 echo "Building Theme"
 npm run build
 
-echo "Removing Node Modules"
-rm -rf node_modules/
+echo
+
+REMOVEABLE_ITEMS=`cat exclude.txt`
+for ITEM in $REMOVEABLE_ITEMS; do
+	if [[ "$ITEM" == *.* ]]
+	then
+		find . -depth -name "$ITEM" -type f -exec rm "{}" \;
+	else
+		find . -depth -name -type d -exec rem -rf "{}" \;
+	fi
+done
+
+rm exlude-list.txt
+
+# echo "Removing Node Modules"
+# rm -rf node_modules/
