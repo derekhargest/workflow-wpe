@@ -32,6 +32,3 @@ for ITEM in $REMOVEABLE_ITEMS; do
 done
 
 rm exclude.txt
-
-echo "Removing Node Modules"
-rm -rf node_modules/
