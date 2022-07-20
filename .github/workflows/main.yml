@@ -22,5 +22,5 @@ jobs:
           #Deploy Variables
           WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
           WPE_ENV: ${{ env.PROD_ENVIRONMENT }}
-          REMOTE_PATH: "wp-content/themes/${{ env.theme_name }}/"
+          REMOTE_PATH: "wp-content/themes/${{ env.THEME_NAME }}/"
           CACHE_CLEAR: TRUE
