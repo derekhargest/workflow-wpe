@@ -21,8 +21,6 @@ npm run build
 
 echo
 
-wget ${EXCLUDE}
-
 REMOVEABLE_ITEMS=`cat exclude.txt`
 for ITEM in $REMOVEABLE_ITEMS; do
 	if [[ "$ITEM" == *.* ]]
