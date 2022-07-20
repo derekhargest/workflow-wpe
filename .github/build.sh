@@ -23,15 +23,10 @@ echo
 
 REMOVEABLE_ITEMS=`cat exclude.txt`
 for ITEM in $REMOVEABLE_ITEMS; do
-	if [[ "$ITEM" == *.* ]]
-	then
-		find . -depth -name "$ITEM" -type f -exec rm "{}" \;
-	else
-		find . -depth -name -type -exec rem -rf "{}" d \;
-	fi
+	echo ITEM
 done
 
 rm exclude.txt
 
-# echo "Removing Node Modules"
-# rm -rf node_modules/
+echo "Removing Node Modules"
+rm -rf node_modules/
