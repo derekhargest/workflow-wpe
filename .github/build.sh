@@ -27,7 +27,7 @@ for ITEM in $REMOVEABLE_ITEMS; do
 	then
 		find . -depth -name "$ITEM" -type f -exec rm "{}" \;
 	else
-		find . -depth -name -type d -exec rm -rf "{}" \;
+		find . -depth -name -type -exec rm -rf "{}" d \;
 	fi
 done
 
