@@ -21,6 +21,6 @@ jobs:
         with:
           #Deploy Variables
           WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
-          WPE_ENV: ${{ env.DEVENVIRONMENT }}
-          REMOTE_PATH: "wp-content/themes/workflow-wpe/"
+          WPE_ENV: ${{ env.DEV_ENVIRONMENT }}
+          REMOTE_PATH: "wp-content/themes/${{ env.theme_name }}/"
           CACHE_CLEAR: TRUE

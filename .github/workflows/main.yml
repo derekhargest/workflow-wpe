@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v1.0.2
       - name: Build Dependencies
         run: |
           chmod +x .github/build.sh
@@ -19,6 +21,6 @@ jobs:
         with:
           #Deploy Variables
           WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }} 
-          WPE_ENV: mindgrub
-          REMOTE_PATH: "wp-content/themes/workflow-wpe/"
+          WPE_ENV: ${{ env.PROD_ENVIRONMENT }}
+          REMOTE_PATH: "wp-content/themes/${{ env.theme_name }}/"
           CACHE_CLEAR: TRUE
