@@ -25,9 +25,9 @@ REMOVEABLE_ITEMS=`cat exclude.txt`
 for ITEM in $REMOVEABLE_ITEMS; do
 	if [[ "$ITEM" == *.* ]]
 	then
-		find . -depth -name "$ITEM" -type f -exec rm "{}" \;
+		rm "{}" \;
 	else
-		find . -depth -name -type -exec rm -rf "{}" d \;
+		rm -rf "{}" \;
 	fi
 done
 
