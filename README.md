@@ -1,99 +1,61 @@
+<<<<<<< Updated upstream
 # Mindgrub Starter Theme DEV BRANCH
+=======
+# WPEngine Workflow for GMMB
+>>>>>>> Stashed changes
 
-This is a WordPress theme intended to be used as a starting point for making a custom theme.
+This repository is a starting point for a modern WordPress workflow for GMMB and leverages the WPEngine hosting platform. This development product includes local development through lando, dependency management through webpack and deployment through GitHub actions. It uses WPEngine's deploy action to connect to the WPEngine Servers and deploy to each environment.
 
-## Build Process
+The theme uses Mindgrub's Wordpress Starter theme as a starting point. 
 
-This theme uses NPM and webpack to build and optimize front end assets including CSS, JS, and images. After running an `npm install` from the theme root you will be able to utilize the following commands.
+## Prerequisites
 
-> **<em>NOTE: The theme now uses Webpack 5 and has been tested up to the following dependency versions. Use [nvm](https://github.com/nvm-sh/nvm) to switch between versions if needed.</em>**
-> - **node: v14.0.0**
-> - **npm: v6.14.4**
->
-> And requires a minimum of:
-> - **node: v12.0.0**
-> - **npm: v6.9.0**
->
-> Some projects may need their CI/CD scripts updated to ensure that these versions of
-> node/npm are supported. It's possible that the image used can support it, but if not, there is an easy solution: nvm.
-> You would want to add the following right before `npm run build` is being executed:
-> ```html
-> - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-> - ". ~/.nvm/nvm.sh"
-> - nvm install v12.0.0
-```
+### For CI / CD through GitHub Actions:
 
-### npm run start
-This command will run webpack in watch mode. Any changes made to the front end assets will trigger the build process. This command will also start a browser sync instance at http://localhost:3791. It will use a proxy URL defined in webpack.config.js. If you get a 404 error it most likely means that the proxy URL differs from the configured Lando URL.
+GitHub: This product assumes the use of GitHub for version control and CI / CD
+* Generate a new SSH key - https://wpengine.com/support/ssh-keys-for-shell-access/#Generate_New_SSH_Key
+* Add PRIVATE KEY to Organization Secrets
 
-### npm run build
-This command will run webpack once with several optimizations that are too slow for watch mode. Typically this command is run as part of our CI deployment process.
+WPEngine: This product assumes a hosting provider of WPEngine. 
+* Aquire access to  GMMB's WPEngine account.
+* Add the PUBLIC KEY to your WPEngine account by navigating to Profile > SSH keys > Create SSH key and pasting your public key in the field
 
-### Actions
-The build script
-* Transpiles ECMASCRIPT 2015+ JavaScript using Babel.
-* Minifies .js and .css files.
-* Adds browser prefixes for CSS rules using autoprefixer.
-* Compiles .scss files.
-* Creates sourcemaps for .scss and .js files.
-* Creates dist directory with the built images, fonts, styles, and scripts.
+### For Development:
 
-## Special Notes
-This theme uses a wrapper to put the header and footer around the main content; there's no need to include the header and footer in individual webpage templates.
+Install NVM - https://github.com/nvm-sh/nvm
+Install Lando - https://docs.lando.dev/getting-started/installation.html
 
-## Structure
-The following is a description of the structure and purpose of each of the theme directories.
+:exclamation: Make sure all repo branches are up to date: we will be creating a new repo with DEV as a base.  The addition of this workflow is a good spot to sync all the environments. It is possible to update branches with the specific environments theme files, but is out of scope of these instructions. :exclamation:
 
-### acf-json
-When this directory is present within a theme the Advanced Custom Fields (ACF) plugin will automatically save configuration changes to JSON files in addition to the database. When displaying fields ACF will prioritize using the JSON files as the source of truth over the database. This allows us to commit our ACF configuration to code rather than sync the configuration between environments via the database.
+## Installation
 
-### dist
-The webpack build process places optimized assets in this directory.
+### As part of an existing project:
 
-#### fonts
-Should contain fonts that are not pulled from the web. A config should be kept here for custom generated icon fonts ( i.e. from Fontello ).
+(These instructions assume the project does not have a current repo or a new repo will be created for the project with this new workflow. This also assumes the existing project is already on WPEngine.)
 
-#### images
-Should contain images used by the theme that are not sourced from the CMS.
+* Create new local installation of site if one has not already been set up:
+	* Create new backup point in WPEngine, preferably from the dev environment so any code updates being worked on are included in your work
+	* Prepare Zip from backup point
+	* Download Zip when preparation is complete
+	* Unzip to desired folder
+	* run:
+		* lando init
+			* select current folder as root
+		* lando db-import wp-content/mysql.sql
+			* imports database from wpengine backup
+		* lando wp search-replace '//wpengineurl.wpengine.com' '//desiredurl.lndo.site'
+	* change wp-config file to point to the lando database:
+		DB_NAME - wordpress
+		DB_USER - wordpress
+		DB_PASSWORD - wordpress
+		DB_HOST - database
+* Add minimal working files from repo
+	* git remote add origin https://github.com/derekhargest/workflow-wpe.git
+	* git pull origin minimal
+	* rm -rf .git
+* edit the .env file in the root of the theme, editing the variables with the names of the corresponding instances:
 
-### includes
-Contains custom PHP functions, classes, filters, and actions used by the theme.
-
-*  admin-cleanup - Removes unused features from the admin dashboard.
-*  admin-editor - Customizations and additions to the admin WYSIWYG editor (TinyMCE).
-*  admin - General admin dashboard customizations and additions.
-*  enqueue - Handles the loading of scripts and styles on both the front and backends.
-*  image-functions - Image helper functions.
-*  misc-functions - General helper functions.
-*  text-funcitons - Text helper functions.
-*  theme-functions - Theme specific functions.
-*  theme-hooks - Theme specific filters and actions.
-*  video-functions - Video helper functions.
-*  wrapper - Implements a theme "wrapper" which improves code reuse when creating new templates.
-
-### partials
-Should contain WordPress templates for contained, reusable components for use in full WordPress templates.
-
-### plugins
-Contains filters and actions specific to functions we commonly use.
-
-### scripts
-Contains JS source files used by the theme. Wherever possible components have been separated out and the files in the root scripts directory are only entry points. Components are written as [CommonJS](https://flaviocopes.com/commonjs/) modules where possible. Modules with backend dependencies ( i.e. those that call functions via AJAX ) should be named the same as their PHP counterparts in includes. Note that jQuery is loaded as an external by Webpack as many WordPress functions rely on a global jQuery library. You may use it without requiring or importing it.
-
-* admin - Used to override default behavior in the WordPress admin dashboard.
-* theme - Used to provide behavior for the front end of the site.
-
-### styles
-Contains SCSS source files used by the theme. Wherever possible components have been separated out and the files in the root styles directory are only entry points. The [BEM](http://getbem.com/) methodology is used wherever possible and top level blocks typically correspond to template partials.
-
-Please read Mindgrub's [Front-End Development](https://mindgrub.atlassian.net/wiki/spaces/WEB/pages/1499627541/Front-End+Development) document on Confluence for more guidance and information on our standards.
-
-* admin - Used to override defaults in the WordPress admin dashboard.
-* editor - Used to style the admin WYSIWYG editor to more closely match the front end.
-* theme - Used to style the front end of the site.
-
-### taxonomies
-Contains boilerplate for custom taxonomy definitions.
-
-### types
-Contains boilerplate for custom post type definitions.
+	PROD_ENVIRONMENT=prodname
+	STG_ENVIRONMENT=stgname
+	DEV_ENVIRONMENT=devname
+	THEME_NAME=themename
