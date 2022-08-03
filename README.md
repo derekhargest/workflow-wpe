@@ -51,8 +51,12 @@ Install Lando - https://docs.lando.dev/getting-started/installation.html
 	```
 	git remote add origin https://github.com/derekhargest/workflow-wpe.git
 	```
-	* git pull origin minimal
-	* rm -rf .git
+	```
+	git pull origin minimal
+	```
+	```
+	rm -rf .git
+	```
 * edit the .env file in the root of the theme, editing the variables with the names of the corresponding instances:
 
 	PROD_ENVIRONMENT=prodname
