@@ -8,12 +8,12 @@ The theme uses Mindgrub's Wordpress Starter theme as a starting point.
 
 ### For CI / CD through GitHub Actions:
 
-GitHub: This product assumes the use of GitHub for version control and CI / CD
-* Generate a new SSH key - https://wpengine.com/support/ssh-keys-for-shell-access/#Generate_New_SSH_Key
+GitHub: This product assumes the use of GitHub for version control and CI / CD ( this step only needs to be completed for one key )
+* Generate a new SSH KEY - https://wpengine.com/support/ssh-keys-for-shell-access/#Generate_New_SSH_Key
 * Add PRIVATE KEY to Organization Secrets
 
 WPEngine: This product assumes a hosting provider of WPEngine. 
-* Aquire access to  GMMB's WPEngine account.
+* Aquire access to GMMB's WPEngine account.
 * Add the PUBLIC KEY to your WPEngine account by navigating to Profile > SSH keys > Create SSH key and pasting your public key in the field
 
 ### For Development:
@@ -59,7 +59,7 @@ WPEngine: This product assumes a hosting provider of WPEngine.
 	```
 	rm -rf .git
 	```
-* edit the .env file in the root of the theme, editing the variables with the names of the corresponding instances:
+* edit the .env file in the root of the theme, editing the variables with the names of the corresponding environments:
 	
 	```
 	PROD_ENVIRONMENT=prodname
@@ -96,10 +96,10 @@ WPEngine: This product assumes a hosting provider of WPEngine.
 * Using terminal, navigate to the wp-content/themes folder
 * git clone this repo into the themes folder
 * change the name of the folder to the desired theme name
-* delete git folder
-* create new site in wpengine
-* create staging and dev instances for this new site in wpengine noting the name of the instances
-* edit the .env file in the root of the theme, editing the variables with the names of the corresponding instances:
+* delete .git folder in the theme folder
+* create a new site in wpengine
+* create staging and dev environments for this new site in wpengine noting the name of the environments
+* edit the .env file in the root of the theme, updating the variables with the names of the corresponding environments and theme name:
 
 	``` 
 	PROD_ENVIRONMENT=prodname
@@ -142,3 +142,9 @@ WPEngine: This product assumes a hosting provider of WPEngine.
 	* nvm use 14
 	* npm install
 	* npm run start
+
+## Notes:
+
+This product comes with an exclude.txt file in the root, any files listed here will NOT be deployed to the environments. There is a preloaded default, just be aware this is where the node_modules folder, gitignore, etc are taken out of the payload deployed to the environments. It works like any .gitignore file.
+
+That's it! Happy Developing! :smile:
