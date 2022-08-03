@@ -48,7 +48,9 @@ Install Lando - https://docs.lando.dev/getting-started/installation.html
 		DB_HOST - database
 		```
 * Add minimal working files from repo
-	* git remote add origin https://github.com/derekhargest/workflow-wpe.git
+	```
+	git remote add origin https://github.com/derekhargest/workflow-wpe.git
+	```
 	* git pull origin minimal
 	* rm -rf .git
 * edit the .env file in the root of the theme, editing the variables with the names of the corresponding instances:
