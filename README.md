@@ -71,12 +71,74 @@ WPEngine: This product assumes a hosting provider of WPEngine.
 * Create repo in github
 * Initialize git, add contents of the folder to the local repo, change the name of master to main, add the remote origin, create the staging branch from the main branch, create the dev branch from the main branch:
 
-```
-git init
-git add .
-git commit -m "first commit"
-git branch -M main
-git remote add origin git@github.com:[GMMBDevelopment/repo-name.git]
-git checkout -b stage main
-git checkout -b dev main
-```
+	```
+	git init
+	git add .
+	git commit -m "first commit"
+	git branch -M main
+	git remote add origin git@github.com:[GMMBDevelopment/repo-name.git]
+	git checkout -b stage main
+	git checkout -b dev main
+	```
+* At this point, development can be started (see development) on local until first desired push
+* When ready to push first commit:
+	* git add ...
+	* git commit -m ...
+	* git push -u origin dev
+* This will deploy any code changes to the development environment in WPEngine
+* When ready, commit and deploy to the staging and production environments
+* GitHub actions will run 'npm run build' and deploy the necessary files to the corresponding environments
+
+### To start a new project:
+
+* Create a new repo in GitHub
+* Spin up a new WordPress site locally using lando: https://docs.lando.dev/wordpress/getting-started.html
+* Using terminal, navigate to the wp-content/themes folder
+* git clone this repo into the themes folder
+* change the name of the folder to the desired theme name
+* delete git folder
+* create new site in wpengine
+* create staging and dev instances for this new site in wpengine noting the name of the instances
+* edit the .env file in the root of the theme, editing the variables with the names of the corresponding instances:
+
+	``` 
+	PROD_ENVIRONMENT=prodname
+	STG_ENVIRONMENT=stgname
+	DEV_ENVIRONMENT=devname
+	THEME_NAME=themename
+	```
+
+* Change the proxy address in webpack.config.js > plugins > BrowserSyncPlugin
+* In terminal in the theme folder - Initialize git, add contents of the folder to the local repo, change the name of master to main, add the remote origin, create the staging branch from the main branch, create the dev branch from the main branch:
+
+	```
+	git init
+	git add .
+	git commit -m "first commit"
+	git branch -M main
+	git remote add origin git@github.com:GMMBDevelopment/repo-name.git
+	git checkout -b stage main
+	git checkout -b dev main
+	```
+
+* At this point, development can be started (see development) on local until first desired push
+* When ready to push first commit:
+	* git add ...
+	* git commit -m ...
+	* git push -u origin dev
+* This will deploy any code changes to the development environment in WPEngine
+* When ready, commit and deploy to the staging and production environments
+* Don't forget to select your theme as the active theme in wordpress' admin for each environment
+* GitHub actions will run 'npm run build' and deploy the necessary files to the corresponding environments
+
+## Development:
+
+* In terminal, navigate to the local site's root
+* run:
+	* lando start
+* In terminal, navigate to the desired theme folder
+* run:
+	* nvm install 14
+	* nvm use 14
+	* npm install
+	* npm run start
