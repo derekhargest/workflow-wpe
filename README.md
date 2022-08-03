@@ -41,6 +41,7 @@ WPEngine: This product assumes a hosting provider of WPEngine.
 			* imports database from wpengine backup
 		* lando wp search-replace '//wpengineurl.wpengine.com' '//desiredurl.lndo.site'
 	* change wp-config file to point to the lando database:
+		
 		```
 		DB_NAME - wordpress
 		DB_USER - wordpress
@@ -48,6 +49,7 @@ WPEngine: This product assumes a hosting provider of WPEngine.
 		DB_HOST - database
 		```
 * Add minimal working files from repo and remove minimal repo's git folder
+	
 	```
 	git remote add origin https://github.com/derekhargest/workflow-wpe.git
 	```
@@ -58,9 +60,23 @@ WPEngine: This product assumes a hosting provider of WPEngine.
 	rm -rf .git
 	```
 * edit the .env file in the root of the theme, editing the variables with the names of the corresponding instances:
+	
 	```
 	PROD_ENVIRONMENT=prodname
 	STG_ENVIRONMENT=stgname
 	DEV_ENVIRONMENT=devname
 	THEME_NAME=themename
 	```
+* Change the proxy address in webpack.config.js > plugins > BrowserSyncPlugin if not done already
+* Create repo in github
+* Initialize git, add contents of the folder to the local repo, change the name of master to main, add the remote origin, create the staging branch from the main branch, create the dev branch from the main branch:
+
+```
+git init
+git add .
+git commit -m "first commit"
+git branch -M main
+git remote add origin git@github.com:[GMMBDevelopment/repo-name.git]
+git checkout -b stage main
+git checkout -b dev main
+```
