@@ -18,8 +18,8 @@ WPEngine: This product assumes a hosting provider of WPEngine.
 
 ### For Development:
 
-Install NVM - https://github.com/nvm-sh/nvm
-Install Lando - https://docs.lando.dev/getting-started/installation.html
+* Install NVM - https://github.com/nvm-sh/nvm
+* Install Lando - https://docs.lando.dev/getting-started/installation.html
 
 :exclamation: Make sure all repo branches are up to date: we will be creating a new repo with DEV as a base.  The addition of this workflow is a good spot to sync all the environments. It is possible to update branches with the specific environments theme files, but is out of scope of these instructions. :exclamation:
 
@@ -47,7 +47,7 @@ Install Lando - https://docs.lando.dev/getting-started/installation.html
 		DB_PASSWORD - wordpress
 		DB_HOST - database
 		```
-* Add minimal working files from repo
+* Add minimal working files from repo and remove minimal repo's git folder
 	```
 	git remote add origin https://github.com/derekhargest/workflow-wpe.git
 	```
@@ -58,8 +58,9 @@ Install Lando - https://docs.lando.dev/getting-started/installation.html
 	rm -rf .git
 	```
 * edit the .env file in the root of the theme, editing the variables with the names of the corresponding instances:
-
+	```
 	PROD_ENVIRONMENT=prodname
 	STG_ENVIRONMENT=stgname
 	DEV_ENVIRONMENT=devname
 	THEME_NAME=themename
+	```
