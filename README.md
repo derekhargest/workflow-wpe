@@ -36,15 +36,14 @@ WPEngine: This product assumes a hosting provider of WPEngine.
 	* Unzip to desired folder
 	* run:
 		```
-		lando init
+		lando init #select current folder as root
 		```
-			* select current folder as root
+			
 		```
-		lando db-import wp-content/mysql.sql
+		lando db-import wp-content/mysql.sql #imports database from wpengine backup
 		```
-			* imports database from wpengine backup
 		```
-		lando wp search-replace '//wpengineurl.wpengine.com' '//desiredurl.lndo.site'
+		lando wp search-replace '//wpengineurl.wpengine.com' '//desiredurl.lndo.site' #Replaces database entries for local developement
 		```
 	* change wp-config file to point to the lando database:
 		
