@@ -147,4 +147,4 @@ WPEngine: This product assumes a hosting provider of WPEngine.
 
 This product comes with an exclude.txt file in the root, any files listed here will NOT be deployed to the environments. There is a preloaded default, just be aware this is where the node_modules folder, gitignore, etc are taken out of the payload deployed to the environments. It works like any .gitignore file.
 
-That's it!! Happy Developing! :smile:
+That's it! Happy Developing! :smile:
