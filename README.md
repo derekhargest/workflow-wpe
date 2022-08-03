@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
-# Mindgrub Starter Theme DEV BRANCH
-=======
 # WPEngine Workflow for GMMB
->>>>>>> Stashed changes
 
 This repository is a starting point for a modern WordPress workflow for GMMB and leverages the WPEngine hosting platform. This development product includes local development through lando, dependency management through webpack and deployment through GitHub actions. It uses WPEngine's deploy action to connect to the WPEngine Servers and deploy to each environment.
 
@@ -45,10 +41,12 @@ Install Lando - https://docs.lando.dev/getting-started/installation.html
 			* imports database from wpengine backup
 		* lando wp search-replace '//wpengineurl.wpengine.com' '//desiredurl.lndo.site'
 	* change wp-config file to point to the lando database:
+		```
 		DB_NAME - wordpress
 		DB_USER - wordpress
 		DB_PASSWORD - wordpress
 		DB_HOST - database
+		```
 * Add minimal working files from repo
 	* git remote add origin https://github.com/derekhargest/workflow-wpe.git
 	* git pull origin minimal
