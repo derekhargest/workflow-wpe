@@ -1,99 +1,155 @@
-# Mindgrub Starter Theme MAIN BRANCH
+# WPEngine Workflow for GMMB
 
-This is a WordPress theme intended to be used as a starting point for making a custom theme.
+This repository is a starting point for a modern WordPress workflow for GMMB and leverages the WPEngine hosting platform. This development product includes local development through lando, dependency management through webpack and deployment through GitHub actions. It uses WPEngine's deploy action to connect to the WPEngine Servers and deploy to each environment.
 
-## Build Process
+The theme uses Mindgrub's Wordpress Starter theme as a starting point. 
 
-This theme uses NPM and webpack to build and optimize front end assets including CSS, JS, and images. After running an `npm install` from the theme root you will be able to utilize the following commands.
+## Prerequisites
 
-> **<em>NOTE: The theme now uses Webpack 5 and has been tested up to the following dependency versions. Use [nvm](https://github.com/nvm-sh/nvm) to switch between versions if needed.</em>**
-> - **node: v14.0.0**
-> - **npm: v6.14.4**
->
-> And requires a minimum of:
-> - **node: v12.0.0**
-> - **npm: v6.9.0**
->
-> Some projects may need their CI/CD scripts updated to ensure that these versions of
-> node/npm are supported. It's possible that the image used can support it, but if not, there is an easy solution: nvm.
-> You would want to add the following right before `npm run build` is being executed:
-> ```html
-> - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-> - ". ~/.nvm/nvm.sh"
-> - nvm install v12.0.0
-```
+### For CI / CD through GitHub Actions:
 
-### npm run start
-This command will run webpack in watch mode. Any changes made to the front end assets will trigger the build process. This command will also start a browser sync instance at http://localhost:3791. It will use a proxy URL defined in webpack.config.js. If you get a 404 error it most likely means that the proxy URL differs from the configured Lando URL.
+GitHub: This product assumes the use of GitHub for version control and CI / CD ( this step only needs to be completed for one key )
+* Generate a new SSH KEY - https://wpengine.com/support/ssh-keys-for-shell-access/#Generate_New_SSH_Key
+* Add PRIVATE KEY to Organization Secrets
 
-### npm run build
-This command will run webpack once with several optimizations that are too slow for watch mode. Typically this command is run as part of our CI deployment process.
+WPEngine: This product assumes a hosting provider of WPEngine. 
+* Aquire access to GMMB's WPEngine account.
+* Add the PUBLIC KEY to your WPEngine account by navigating to Profile > SSH keys > Create SSH key and pasting your public key in the field
 
-### Actions
-The build script
-* Transpiles ECMASCRIPT 2015+ JavaScript using Babel.
-* Minifies .js and .css files.
-* Adds browser prefixes for CSS rules using autoprefixer.
-* Compiles .scss files.
-* Creates sourcemaps for .scss and .js files.
-* Creates dist directory with the built images, fonts, styles, and scripts.
+### For Development:
 
-## Special Notes
-This theme uses a wrapper to put the header and footer around the main content; there's no need to include the header and footer in individual webpage templates.
+* Install NVM - https://github.com/nvm-sh/nvm
+* Install Lando - https://docs.lando.dev/getting-started/installation.html
 
-## Structure
-The following is a description of the structure and purpose of each of the theme directories.
+:exclamation: Make sure all repo branches are up to date: we will be creating a new repo with DEV as a base.  The addition of this workflow is a good spot to sync all the environments. It is possible to update branches with the specific environments theme files, but is out of scope of these instructions. :exclamation:
 
-### acf-json
-When this directory is present within a theme the Advanced Custom Fields (ACF) plugin will automatically save configuration changes to JSON files in addition to the database. When displaying fields ACF will prioritize using the JSON files as the source of truth over the database. This allows us to commit our ACF configuration to code rather than sync the configuration between environments via the database.
+## Installation
 
-### dist
-The webpack build process places optimized assets in this directory.
+### As part of an existing project:
 
-#### fonts
-Should contain fonts that are not pulled from the web. A config should be kept here for custom generated icon fonts ( i.e. from Fontello ).
+(These instructions assume the project does not have a current repo or a new repo will be created for the project with this new workflow. This also assumes the existing project is already on WPEngine.)
 
-#### images
-Should contain images used by the theme that are not sourced from the CMS.
+* Create new local installation of site if one has not already been set up:
+	* Create new backup point in WPEngine, preferably from the dev environment so any code updates being worked on are included in your work
+	* Prepare Zip from backup point
+	* Download Zip when preparation is complete
+	* Unzip to desired folder
+	* run:
+		```
+		lando init #select current folder as root
+		```
+			
+		```
+		lando db-import wp-content/mysql.sql #imports database from wpengine backup
+		```
+		```
+		lando wp search-replace '//wpengineurl.wpengine.com' '//desiredurl.lndo.site' #Replaces database entries for local developement
+		```
+	* change wp-config file to point to the lando database:
+		
+		```
+		DB_NAME - wordpress
+		DB_USER - wordpress
+		DB_PASSWORD - wordpress
+		DB_HOST - database
+		```
+* Add minimal working files from repo and remove minimal repo's git folder
+	
+	```
+	git remote add origin https://github.com/derekhargest/workflow-wpe.git
+	```
+	```
+	git pull origin minimal
+	```
+	```
+	rm -rf .git
+	```
+* edit the .env file in the root of the theme, editing the variables with the names of the corresponding environments:
+	
+	```
+	PROD_ENVIRONMENT=prodname
+	STG_ENVIRONMENT=stgname
+	DEV_ENVIRONMENT=devname
+	THEME_NAME=themename
+	```
+* Change the proxy address in webpack.config.js > plugins > BrowserSyncPlugin if not done already
+* Create repo in github
+* Initialize git, add contents of the folder to the local repo, change the name of master to main, add the remote origin, create the staging branch from the main branch, create the dev branch from the main branch:
 
-### includes
-Contains custom PHP functions, classes, filters, and actions used by the theme.
+	```
+	git init
+	git add .
+	git commit -m "first commit"
+	git branch -M main
+	git remote add origin git@github.com:[GMMBDevelopment/repo-name.git]
+	git checkout -b stage main
+	git checkout -b dev main
+	```
+* At this point, development can be started (see development) on local until first desired push
+* When ready to push first commit:
+	* git add ...
+	* git commit -m ...
+	* git push -u origin dev
+* This will deploy any code changes to the development environment in WPEngine
+* When ready, commit and deploy to the staging and production environments
+* GitHub actions will run 'npm run build' and deploy the necessary files to the corresponding environments
 
-*  admin-cleanup - Removes unused features from the admin dashboard.
-*  admin-editor - Customizations and additions to the admin WYSIWYG editor (TinyMCE).
-*  admin - General admin dashboard customizations and additions.
-*  enqueue - Handles the loading of scripts and styles on both the front and backends.
-*  image-functions - Image helper functions.
-*  misc-functions - General helper functions.
-*  text-funcitons - Text helper functions.
-*  theme-functions - Theme specific functions.
-*  theme-hooks - Theme specific filters and actions.
-*  video-functions - Video helper functions.
-*  wrapper - Implements a theme "wrapper" which improves code reuse when creating new templates.
+### To start a new project:
 
-### partials
-Should contain WordPress templates for contained, reusable components for use in full WordPress templates.
+* Create a new repo in GitHub
+* Spin up a new WordPress site locally using lando: https://docs.lando.dev/wordpress/getting-started.html
+* Using terminal, navigate to the wp-content/themes folder
+* git clone this repo into the themes folder
+* change the name of the folder to the desired theme name
+* delete .git folder in the theme folder
+* create a new site in wpengine
+* create staging and dev environments for this new site in wpengine noting the name of the environments
+* edit the .env file in the root of the theme, updating the variables with the names of the corresponding environments and theme name:
 
-### plugins
-Contains filters and actions specific to functions we commonly use.
+	``` 
+	PROD_ENVIRONMENT=prodname
+	STG_ENVIRONMENT=stgname
+	DEV_ENVIRONMENT=devname
+	THEME_NAME=themename
+	```
 
-### scripts
-Contains JS source files used by the theme. Wherever possible components have been separated out and the files in the root scripts directory are only entry points. Components are written as [CommonJS](https://flaviocopes.com/commonjs/) modules where possible. Modules with backend dependencies ( i.e. those that call functions via AJAX ) should be named the same as their PHP counterparts in includes. Note that jQuery is loaded as an external by Webpack as many WordPress functions rely on a global jQuery library. You may use it without requiring or importing it.
+* Change the proxy address in webpack.config.js > plugins > BrowserSyncPlugin
+* In terminal in the theme folder - Initialize git, add contents of the folder to the local repo, change the name of master to main, add the remote origin, create the staging branch from the main branch, create the dev branch from the main branch:
 
-* admin - Used to override default behavior in the WordPress admin dashboard.
-* theme - Used to provide behavior for the front end of the site.
+	```
+	git init
+	git add .
+	git commit -m "first commit"
+	git branch -M main
+	git remote add origin git@github.com:GMMBDevelopment/repo-name.git
+	git checkout -b stage main
+	git checkout -b dev main
+	```
 
-### styles
-Contains SCSS source files used by the theme. Wherever possible components have been separated out and the files in the root styles directory are only entry points. The [BEM](http://getbem.com/) methodology is used wherever possible and top level blocks typically correspond to template partials.
+* At this point, development can be started (see development) on local until first desired push
+* When ready to push first commit:
+	* git add ...
+	* git commit -m ...
+	* git push -u origin dev
+* This will deploy any code changes to the development environment in WPEngine
+* When ready, commit and deploy to the staging and production environments
+* Don't forget to select your theme as the active theme in wordpress' admin for each environment
+* GitHub actions will run 'npm run build' and deploy the necessary files to the corresponding environments
 
-Please read Mindgrub's [Front-End Development](https://mindgrub.atlassian.net/wiki/spaces/WEB/pages/1499627541/Front-End+Development) document on Confluence for more guidance and information on our standards.
+## Development:
 
-* admin - Used to override defaults in the WordPress admin dashboard.
-* editor - Used to style the admin WYSIWYG editor to more closely match the front end.
-* theme - Used to style the front end of the site.
+* In terminal, navigate to the local site's root
+* run:
+	* lando start
+* In terminal, navigate to the desired theme folder
+* run:
+	* nvm install 14
+	* nvm use 14
+	* npm install
+	* npm run start
 
-### taxonomies
-Contains boilerplate for custom taxonomy definitions.
+## Notes:
 
-### types
-Contains boilerplate for custom post type definitions.
+This product comes with an exclude.txt file in the root, any files listed here will NOT be deployed to the environments. There is a preloaded default, just be aware this is where the node_modules folder, gitignore, etc are taken out of the payload deployed to the environments. It works like any .gitignore file.
+
+That's it! Happy Developing! :smile:

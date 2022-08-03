@@ -9,3 +9,4 @@ build-scripts
 .gitignore
 atlassian-ide-plugin.xml
 wpengine-codeship-continuous-deployment
+test.txt
