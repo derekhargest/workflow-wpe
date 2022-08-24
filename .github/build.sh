@@ -19,7 +19,7 @@ npm install
 echo "Building Theme"
 npm run build
 
-echo
+echo "Remove Items Excluded from Server"
 
 REMOVEABLE_ITEMS=`cat exclude.txt`
 for ITEM in $REMOVEABLE_ITEMS; do
