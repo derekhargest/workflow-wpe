@@ -74,7 +74,7 @@ WPEngine: This product assumes a hosting provider of WPEngine.
 	```
 * Change the proxy address in webpack.config.js > plugins > BrowserSyncPlugin if not done already
 * Create repo in github
-* Initialize git, add contents of the folder to the local repo, change the name of master to main, add the remote origin, create the staging branch from the main branch, create the dev branch from the main branch:
+* Initialize git, add contents of the folder to the local repo, change the name of master to main, add the remote origin, push the main branch. The main branch needs to be created before other branches are created. This step will push code to the live server.
 
 	```
 	git init
@@ -82,10 +82,17 @@ WPEngine: This product assumes a hosting provider of WPEngine.
 	git commit -m "first commit"
 	git branch -M main
 	git remote add origin git@github.com:[GMMBDevelopment/repo-name.git]
+	git push origin main - THIS WILL DEPLOY TO THE LIVE SITE
+	```
+
+* Create the staging and development branches, based on the main branch
+
+	```
 	git checkout -b stage main
 	git checkout -b dev main
 	```
-* At this point, development can be started (see development) on local until first desired push
+
+* At this point, development can be started (see development) on your local machine until first desired push
 * When ready to push first commit:
 	* git add ...
 	* git commit -m ...
@@ -122,15 +129,21 @@ WPEngine: This product assumes a hosting provider of WPEngine.
 	git commit -m "first commit"
 	git branch -M main
 	git remote add origin git@github.com:GMMBDevelopment/repo-name.git
+	git push origin main - THIS WILL DEPLOY TO THE LIVE SITE
+	```
+* Create the staging and development branches, based on the main branch
+
+	```
 	git checkout -b stage main
 	git checkout -b dev main
 	```
 
-* At this point, development can be started (see development) on local until first desired push
+* At this point, development can be started on your local until desired push
 * When ready to push first commit:
 	* git add ...
 	* git commit -m ...
 	* git push -u origin dev
+	
 * This will deploy any code changes to the development environment in WPEngine
 * When ready, commit and deploy to the staging and production environments
 * Don't forget to select your theme as the active theme in wordpress' admin for each environment
